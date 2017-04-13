@@ -2,7 +2,7 @@ require("erubis")
 
 module BlocWorks
   class Controller
-    def initializer env
+    def initialize env
       @env = env
     end
 
