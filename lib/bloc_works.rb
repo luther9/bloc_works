@@ -9,13 +9,12 @@ require('bloc_works/utility')
 module BlocWorks
   class Application
     def call env
-      action = controller_and_action(env)
-      str = action[0].new(env).send(action[1])
-      [
-       200,
-       {'Content-Type' => 'text/html'},
-       [str],
-      ]
+      if env['PATH_INFO'] == '/favicon.ico'
+        return [404, {'Content-Type' => 'text/html'}, []]
+      end
+
+      rack_app = get_rack_app(env)
+      rack_app.call(env)
     end
   end
 end
