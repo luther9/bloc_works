@@ -35,27 +35,21 @@ module BlocWorks
       @rules = []
     end
 
-    #10
-    def map url, *args
-      #11
-      options = {}
-      if args[-1].is_a?(Hash)
-        options = args.pop
+    # The arguments destination and options are optional. Destination must be a
+    # String, and options must be a Hash.
+    def map url, destination=nil, options=nil
+      if !options
+        if destination.is_a?(Hash)
+          options = destination
+          destination = nil
+        else
+          options = {}
+        end
       end
       options[:default] ||= {}
 
-      #12
-      destination = nil
-      if args.size > 0
-        destination = args.pop
-      end
-      if args.size > 0
-        raise 'Too many args!'
-      end
-
       #13
-      parts = url.split('/')
-      parts.reject! { |part|
+      parts = url.split('/').reject { |part|
         part.empty?
       }
 
@@ -64,10 +58,10 @@ module BlocWorks
       parts.each { |part|
         case part[0]
         when ':'
-          vars << part[1..-1]
+          append_string_tail(vars, part)
           regex_parts << '([a-zA-Z0-9]+)'
         when '*'
-          vars << part[1..-1]
+          append_string_tail(vars, part)
           regex_parts << '(.*)'
         else
           regex_parts << part
@@ -115,6 +109,12 @@ module BlocWorks
         return controller.action($2, routing_params)
       end
       raise "Destination not found: #{destination}"
+    end
+
+    private
+
+    def append_string_tail arr, str
+      arr << str[1..-1]
     end
   end
 end
