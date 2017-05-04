@@ -74,6 +74,13 @@ module BlocWorks
                   destination: destination, options: options)
     end
 
+    def resources controller
+      map(controller, default: {'action' => 'create'})
+      map("#{controller}/:id/show")
+      map("#{controller}/:id/update")
+      map("#{controller}/:id/delete")
+    end
+
     def look_up_url url
       @rules.each { |rule|
         rule_match = rule[:regex].match(url)

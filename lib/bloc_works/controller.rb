@@ -2,8 +2,9 @@ require("erubis")
 
 module BlocWorks
   class Controller
-    def initialize env
+    def initialize env, view
       @env = env
+      @view = view
       @routing_params = {}
     end
 
@@ -25,7 +26,7 @@ module BlocWorks
     def self.action action, response={}
       #6
       proc { |env|
-        new(env).dispatch(action, response)
+        new(env, action).dispatch(action, response)
       }
     end
 
@@ -47,12 +48,20 @@ module BlocWorks
     end
 
     #2
-    def render *args
-      response(create_response_array(*args))
+    def render view, locals=nil
+      if locals.nil?
+        if view.is_a?(Hash)
+          locals = view
+          view = nil
+        else
+          locals = nil
+        end
+      end
+      response(create_response_array(view, locals))
     end
 
     def redirect_to url
-      response(nil, 301, {'Location' => url})
+      response(nil, 301, 'Location' => url)
     end
 
     #3
@@ -67,6 +76,7 @@ module BlocWorks
 
     #5
     def create_response_array view, locals={}
+      view ||= @view
       filename = File.join("app", "views", controller_dir, "#{view}.html.erb")
       template = File.read(filename)
       eruby = Erubis::Eruby.new(template)
