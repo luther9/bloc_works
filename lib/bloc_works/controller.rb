@@ -51,6 +51,10 @@ module BlocWorks
       response(create_response_array(*args))
     end
 
+    def redirect_to url
+      response(nil, 301, {'Location' => url})
+    end
+
     #3
     def get_response
       @response

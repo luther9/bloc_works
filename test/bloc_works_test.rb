@@ -6,6 +6,10 @@ class MyController < BlocWorks::Controller
   def welcome
     'Hello'
   end
+
+  def redirectMe
+    redirect_to('http://www.gnu.org')
+  end
 end
 
 class BlocWorksTest < Test::Unit::TestCase
@@ -34,5 +38,11 @@ class BlocWorksTest < Test::Unit::TestCase
     router = BlocWorks::Router.new
     router.map(':controller/:action')
     assert(router.look_up_url('/my/welcome').is_a?(Proc))
+  end
+
+  def test_redirect_to
+    get('/my/redirectMe')
+    assert(last_response.redirect?)
+    assert(last_response.location == 'http://www.gnu.org')
   end
 end
